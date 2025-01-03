@@ -3,6 +3,7 @@ import logging
 
 from app.utils.get_info import GetInfo
 from app.utils.downloader import Downloader
+from app.utils.sql_connector import SQLConnector
 
 class DownloadThread(QThread):
     progress = pyqtSignal(str)  # 信号，传递进度
@@ -17,15 +18,25 @@ class DownloadThread(QThread):
         self.progress.emit("爬取信息中")
         get_info = GetInfo()
         userInfo = get_info(self.userID, self.illustID)
-        logging.debug("获取信息： %s", userInfo)
+        logging.debug("DownloadThread: 获取信息: %s", userInfo)
         self.progress.emit("获取信息完成")
 
         # 下载
         downloader = Downloader()
+        logging.debug("DownloadThread: 下载图片")
         self.progress.emit("下载图片中")
-        downloader(userInfo)
+        lastDownloadID = downloader(userInfo)
         self.progress.emit("下载完成")
 
+        # 插入数据库
+        logging.debug("DownloadThread: 开始插入数据库")
+        self.progress.emit("开始插入数据库")
+        userInfo["lastDownloadID"] = lastDownloadID
+        sqlConnector = SQLConnector()
+        sqlConnector.insertByID(userInfo)
+        self.progress.emit("插入数据库完成")
+
         # 返回信号
+        logging.debug("DownloadThread: 返回信号")
         self.finished.emit()
 

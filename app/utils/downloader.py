@@ -10,29 +10,37 @@ class Downloader:
         self.downloadLink = []
         self.pixiv = Pixiv()
         self.single_download = SingleDownload()
-        pass
+        self.lastDownloadID = 0
 
     def __call__(self, userInfo):
         return self.downloader(userInfo)
 
-    def downloader(self, userInfo):
+    def downloader(self, userInfo) -> str:
         illusts = self.pixiv.getAllIllustFromUserID(userInfo.get("ID"))
 
         for illust in illusts:
             self.getDownloadLink(illust)
 
-        logging.debug("Downloader.downloader")
-
         if userInfo.get("lastDownloadID"):
+            logging.debug("Downloader.downloader: 数据库有记录")
             for url in self.downloadLink:
-                self.rand_sleep()
-                if url.split("/")[-1].split("_")[0] < userInfo.get("lastDownloadID"):
+                currentDownloadID = int(url.split("/")[-1].split("_")[0])
+                if currentDownloadID <= int(userInfo.get("lastDownloadID")):
+                    logging.info("这张图片已经下载过了: %s", currentDownloadID)
                     continue
-                self.single_download(userInfo.get("name"), userInfo.get("ID"), url)
-        else:
-            for url in self.downloadLink:
                 self.rand_sleep()
                 self.single_download(userInfo.get("name"), userInfo.get("ID"), url)
+                if self.lastDownloadID < currentDownloadID:
+                    self.lastDownloadID = currentDownloadID
+        else:
+            logging.debug("Downloader.downloader: 数据库无记录")
+            for url in self.downloadLink:
+                self.rand_sleep()
+                currentDownloadID = int(url.split("/")[-1].split("_")[0])
+                self.single_download(userInfo.get("name"), userInfo.get("ID"), url)
+                if self.lastDownloadID < currentDownloadID:
+                    self.lastDownloadID = currentDownloadID
+        return str(self.lastDownloadID)
 
     def getDownloadLink(self, illust):
         if illust.meta_single_page.original_image_url:
@@ -44,5 +52,7 @@ class Downloader:
                 self.downloadLink.append(urls.image_urls.original)
 
     def rand_sleep(self, base: float = 0.1, rand: float = 2.5) -> None:
-        time.sleep(base + rand * random.random())  # noqa: S311
+        random_sleep = base + rand * random.random()
+        logging.info("Downloader.rand_sleep: 随机休眠: %s", random_sleep)
+        time.sleep(random_sleep)  # noqa: S311
             

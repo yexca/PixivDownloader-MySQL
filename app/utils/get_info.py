@@ -16,10 +16,11 @@ class GetInfo():
     
     def get_Info(self, userID: str | None = None, illustID: str | None = None):
         logging.debug("GetInfo.get_Info: 查询数据库")
-        if userID != None:
+        # if userID != None:
+        if userID:
             logging.debug("GetInfo.get_Info: 有用户 ID")
             userInfo = self.sqlConnector.selectFromID(userID)
-        elif illustID != None:
+        elif illustID:
             logging.debug("GetInfo.get_Info: 无用户 ID")
             userID = self.pixiv.getUserIDFromillustID(illustID)
             userInfo = self.sqlConnector.selectFromID(userID)
@@ -37,6 +38,7 @@ class GetInfo():
             logging.debug("GetInfo.get_Info: 数据库无返回, 构造返回")
             userInfo = {}
             userInfo["ID"] = userID
+            logging.debug("GetInfo.get_Info: 构造信息 userID: %s", userID)
             userInfo["name"] = self.pixiv.getUsernameFromuserID(userID)
             logging.debug("GetInfo.get_Info: 构造信息完成")
             return userInfo

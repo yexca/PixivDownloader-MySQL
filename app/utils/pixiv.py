@@ -1,6 +1,7 @@
 from pixivpy3 import *
 import json
 import os
+import logging
 
 class Pixiv():
     def __init__(self):
@@ -41,10 +42,10 @@ class Pixiv():
     
     def getUsernameFromuserID(self, userID: str) -> str:
         json_result = self.api.user_detail(userID)
-        userInfo = json_result.user
-        username = userInfo.name
-        
-        return username
+        # userInfo = json_result.user
+        # username = userInfo.name
+        logging.debug("Pixiv.getUsernameFromuserID: 获取用户名: %s", json_result.user.name)
+        return json_result.user.name
     
     def getAllIllustFromUserID(self, userID: str):
         json_result = self.api.user_illusts(userID)

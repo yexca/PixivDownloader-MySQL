@@ -9,8 +9,8 @@ class SingleDownload:
         self.load_settings()
         os.makedirs(self.downloadPath, exist_ok=True)
 
-    def __call__(self, userName: str , url: str):
-        return self.single_download(userName, url)
+    def __call__(self, userName: str , userID: str, url: str):
+        return self.single_download(userName, userID, url)
 
     def single_download(self, userName: str , userID: str, url: str) -> bool:
         # 判断画师文件夹是否存在
@@ -18,7 +18,8 @@ class SingleDownload:
         os.makedirs(save_dir, exist_ok=True)
 
         file_name = url.split("/")[-1]  # 从 URL 中提取文件名
-        save_path = os.path.join(self.downloadPath, userName ,file_name)
+        # save_path = os.path.join(self.downloadPath, userName ,file_name)
+        save_path = os.path.join(save_dir, file_name)
         try:
             # 设置 HTTP 请求头（例如，对于 Pixiv 需要 Referer）
             headers = {

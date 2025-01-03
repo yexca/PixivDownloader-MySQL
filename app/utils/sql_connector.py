@@ -4,7 +4,7 @@ import pymysql
 import json
 import os
 import logging
-
+from datetime import datetime
 import pymysql.cursors
 
 class SQLConnector():
@@ -37,8 +37,7 @@ class SQLConnector():
             password = self.db_settings.get("db_password", "")
             database = self.db_settings.get("db_database", "")
 
-            logging.info("开始尝试连接数据库, 连接信息:")
-            print(host, port, user, password, database)
+            logging.info("开始尝试连接数据库")
             
             # self.__connection = mysql.connector.connect(
             #     host = host,
@@ -68,7 +67,6 @@ class SQLConnector():
     def selectFromID(self, userID: str):
         logging.debug("SQLConnector.selectFromID 开始执行")
         self.__connect_sql()
-        logging.debug("SQLConnector.selectFromID 连接成功")
         if self.__connection.open:
             logging.debug("SQLConnector.selectFromID 成功连接至数据库")
             # cursor = self.__connection.cursor(dictionary=True) # dictionary=True 用于返回字典形式的结果
@@ -91,3 +89,56 @@ class SQLConnector():
                 return None
         else:
             logging.warning("连接数据库失败")
+
+    def insertByID(self, userInfo):
+        UserInfoSQL = self.selectFromID(userInfo.get("ID"))
+
+        logging.debug("SQLConnector.insertByID 开始执行")
+        self.__connect_sql()
+
+        if self.__connection.open:
+            logging.debug("SQLConnector.insertByID 成功连接至数据库")
+            cursor = self.__connection.cursor(pymysql.cursors.DictCursor) # PyMySQL 用于返回字典形式的结果
+
+            current_time = datetime.now()
+            formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+            if UserInfoSQL:
+                sql_update = """
+                    UPDATE pic SET 
+                        name = %s,
+                        downloadedDate = %s, 
+                        lastDownloadID = %s 
+                    WHERE ID = %s;
+                """
+                cursor.execute(sql_update, (userInfo.get("name"), formatted_time, userInfo.get("lastDownloadID"), userInfo.get("ID"), ))
+                logging.info("数据库更新完成")
+            else:
+                sql_insert = """
+                    INSERT INTO pic VALUES 
+                    (   %s,
+                        %s,
+                        %s,
+                        %s,
+                        'pixiv',
+                        %s
+                    );
+                """
+                cursor.execute(
+                    sql_insert, 
+                    (userInfo.get("ID"),
+                     userInfo.get("name"), 
+                     formatted_time, 
+                     userInfo.get("lastDownloadID"), 
+                     "https://www.pixiv.net/users/" + userInfo.get("ID"),)
+                )
+                logging.info("数据库插入完成")
+
+            logging.debug("SQLConnector.insertByID 提交事务")
+            self.__connection.commit()
+            logging.debug("SQLConnector.insertByID 关闭数据库连接")
+            cursor.close()
+        else:
+            logging.warning("连接数据库失败")
+
+        
