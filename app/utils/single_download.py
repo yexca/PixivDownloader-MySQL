@@ -6,13 +6,17 @@ class SingleDownload:
     def __init__(self):
         self.settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
         self.downloadPath = ""
+        self.load_settings()
         os.makedirs(self.downloadPath, exist_ok=True)
-        pass
 
     def __call__(self, userName: str , url: str):
         return self.single_download(userName, url)
 
-    def single_download(self, userName: str , url: str) -> bool:
+    def single_download(self, userName: str , userID: str, url: str) -> bool:
+        # 判断画师文件夹是否存在
+        save_dir = os.path.join(self.downloadPath, userName + " - " + userID)
+        os.makedirs(save_dir, exist_ok=True)
+
         file_name = url.split("/")[-1]  # 从 URL 中提取文件名
         save_path = os.path.join(self.downloadPath, userName ,file_name)
         try:

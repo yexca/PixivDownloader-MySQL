@@ -1,13 +1,13 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit, QFileDialog, QHBoxLayout, QMessageBox
 )
-from app.utils.get_info import GetInfo
-from app.utils.downloader import Downloader
+from app.utils.download_thread import DownloadThread
 
 class HomeWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.init_ui()
+        self.thread = None
 
     def init_ui(self):
         layout = QVBoxLayout()
@@ -43,30 +43,26 @@ class HomeWindow(QWidget):
     def startDownload(self):
         try:
             self.button.setEnabled(False)
-            self.button.setText("爬取中")
-            get_info = GetInfo()
-
-            if get_info == None:
+            self.button.setText("验证输入中")
+            # 判断输入
+            if self.userID_input.text() or self.illustID_input.text():
+                self.thread = DownloadThread(self.userID_input.text(), self.illustID_input.text())
+                self.thread.progress.connect(self.update_button)
+                self.thread.finished.connect(self.task_finished)
+                self.thread.start()
+            else:
                 self.show_warn()
-
-            print("开始获取信息")
-            # print(self.userID_input.text())
-            # print(self.illustID_input.text())
-            userInfo= get_info(self.userID_input.text(), self.illustID_input.text())
-            print("获取信息完成")
-            self.button.setText("下载中")
-            print("开始下载")
-            downloader = Downloader()
-            downloader(userInfo)
-            print("下载完成")
-            self.show_info()
-            self.button.setEnabled(True)
         except Exception as e:
             print(f"Error in startDownload: {e}")
             self.button.setEnabled(True)
             self.button.setText("开始")
 
-    def show_info(self):
+    def update_button(self, info):
+        self.button.setText(info)
+
+    def task_finished(self):
         QMessageBox.information(self, "信息提示", "下载完成！", QMessageBox.StandardButton.Ok)
+        self.button.setEnabled(True)
+        self.button.setText("开始")
     def show_warn(self):
         QMessageBox.warning(self, "信息提示", "未输入", QMessageBox.StandardButton.OK)

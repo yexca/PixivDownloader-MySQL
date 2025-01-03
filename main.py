@@ -2,6 +2,7 @@ import sys
 import os
 from PyQt6.QtWidgets import QApplication
 from app.ui.main_window import MainWindow
+from app.utils.log_conf import LogConf
 
 def load_stylesheet(file_path):
     # 加载 QSS 样式表
@@ -25,6 +26,11 @@ def load_stylesheet(file_path):
 #         return ""
 
 def main():
+
+    # 日志
+    log_conf = LogConf()
+    log_conf.setup_logging()    
+
     app = QApplication(sys.argv)
 
     # 动态获取 QSS 文件和图片路径

@@ -39,6 +39,13 @@ class Pixiv():
         
         return username
     
+    def getUsernameFromuserID(self, userID: str) -> str:
+        json_result = self.api.user_detail(userID)
+        userInfo = json_result.user
+        username = userInfo.name
+        
+        return username
+    
     def getAllIllustFromUserID(self, userID: str):
         json_result = self.api.user_illusts(userID)
         illusts = json_result.illusts

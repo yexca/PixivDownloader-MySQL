@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit, QFileDialog, QHBoxLayout, QMessageBox
 )
@@ -131,8 +132,9 @@ class SettingsWindow(QWidget):
     def select_download_path(self):
         """Open a file dialog to select the download path."""
         path = QFileDialog.getExistingDirectory(self, "选择下载路径")
+        logging.debug("SettingsWindow.select_download_path: 路径为: %s", path)
         if path:
-            self.download_path_display.setText(path)
+            self.download_path_display.setText(path.replace("/", "\\"))
 
     def show_info(self):
         QMessageBox.information(self, "信息提示", "操作成功！", QMessageBox.StandardButton.Ok)

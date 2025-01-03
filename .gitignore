@@ -2,3 +2,4 @@
 app/resources/
 test/
 __pycache__
+logs/
