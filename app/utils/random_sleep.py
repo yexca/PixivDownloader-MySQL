@@ -4,7 +4,7 @@ import logging
 
 class RandomSleep():
     def __call__(self, base: float = 0.1, rand: float = 2.5):
-        self.rand_sleep(self, base, rand)
+        self.rand_sleep(base, rand)
 
     def rand_sleep(self, base, rand) -> None:
         random_sleep = base + rand * random.random()
