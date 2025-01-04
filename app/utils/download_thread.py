@@ -24,7 +24,7 @@ class DownloadThread(QThread):
         # 下载
         downloader = Downloader()
         logging.debug("DownloadThread: 下载图片")
-        self.progress.emit("下载图片中")
+        self.progress.emit("准备下载图片")
         lastDownloadID = downloader.start(self.downloadProgess, userInfo)
         self.progress.emit("下载完成")
 

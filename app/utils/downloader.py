@@ -15,6 +15,9 @@ class Downloader:
     def start(self, downloadProgess, userInfo) -> str:
         illusts = self.pixiv.getAllIllustFromUserID(userInfo.get("ID"))
 
+        # 报告进度
+        downloadProgess("获取链接中")
+
         for illust in illusts:
             self.getDownloadLink(illust)
 
