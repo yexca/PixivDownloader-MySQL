@@ -26,7 +26,7 @@ class Downloader:
             logging.debug("Downloader.downloader: 数据库有记录")
             for url in self.downloadLink:
                 # 报告进度
-                downloadProgess(f"正在下载 {i}, 一共 {total}")
+                downloadProgess(f"正在下载第 {i} 张, 共 {total} 张")
                 i += 1
 
                 currentDownloadID = int(url.split("/")[-1].split("_")[0])
