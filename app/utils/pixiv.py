@@ -2,6 +2,8 @@ from pixivpy3 import *
 import json
 import os
 import logging
+import time
+import random
 
 class Pixiv():
     def __init__(self):
@@ -48,6 +50,25 @@ class Pixiv():
         return json_result.user.name
     
     def getAllIllustFromUserID(self, userID: str):
-        json_result = self.api.user_illusts(userID)
-        illusts = json_result.illusts
+        illusts = []
+        # 参考: https://github.com/eggplants/pixiv-bulk-downloader/blob/eaf30d6f65fc2a1db7452e0cefee1c544e19bebe/pbd/base.py#L32-L85
+        next_qs = {}
+        while next_qs is not None:
+            if next_qs == {}:
+                json_result = self.api.user_illusts(userID)
+            else:
+                json_result = self.api.user_illusts(**next_qs)
+            
+            if "error" in json_result and "invalid_grant" in json_result["error"]["message"]:
+                self.api.auth(refresh_token=self.refreshToken)
+                continue
+
+            for illust in json_result["illusts"]:
+                illusts.append(illust)
+
+            next_qs = self.api.parse_qs(json_result["next_url"])
+            self.rand_sleep()
         return illusts
+    
+    def rand_sleep(self, base: float = 0.1, rand: float = 2.5) -> None:
+        time.sleep(base + rand * random.random())
