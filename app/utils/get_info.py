@@ -5,11 +5,11 @@ import logging
 
 class GetInfo():
     def __init__(self):
-        print("GetInfo: 开始初始化")
+        logging.debug("GetInfo: 开始初始化")
         self.pixiv = Pixiv()
-        print("GetInfo: 初始化完成 Pixiv")
+        logging.debug("GetInfo: 初始化完成 Pixiv")
         self.sqlConnector = SQLConnector()
-        print("GetInfo: 初始化完成 SQLConnector")
+        logging.debug("GetInfo: 初始化完成 SQLConnector")
 
     def __call__(self, userID: str | None = None, illustID: str | None = None):
         return self.get_Info(userID, illustID)

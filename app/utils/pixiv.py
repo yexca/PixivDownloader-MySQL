@@ -1,9 +1,8 @@
 from pixivpy3 import *
+from app.utils.random_sleep import RandomSleep
 import json
 import os
 import logging
-import time
-import random
 
 class Pixiv():
     def __init__(self):
@@ -11,6 +10,7 @@ class Pixiv():
         self.refreshToken = ""
         self.__getToken()
         self.api.auth(refresh_token=self.refreshToken)
+        self.rand_sleep = RandomSleep()
 
     def __getToken(self):
         settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
@@ -70,5 +70,3 @@ class Pixiv():
             self.rand_sleep()
         return illusts
     
-    def rand_sleep(self, base: float = 0.1, rand: float = 2.5) -> None:
-        time.sleep(base + rand * random.random())

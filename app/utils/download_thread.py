@@ -15,7 +15,7 @@ class DownloadThread(QThread):
         self.illustID = illustID
 
     def run(self):
-        self.progress.emit("爬取信息中")
+        self.progress.emit("查询数据库中")
         get_info = GetInfo()
         userInfo = get_info(self.userID, self.illustID)
         logging.debug("DownloadThread: 获取信息: %s", userInfo)
@@ -25,7 +25,7 @@ class DownloadThread(QThread):
         downloader = Downloader()
         logging.debug("DownloadThread: 下载图片")
         self.progress.emit("下载图片中")
-        lastDownloadID = downloader(userInfo)
+        lastDownloadID = downloader.start(self.downloadProgess, userInfo)
         self.progress.emit("下载完成")
 
         # 插入数据库
@@ -40,3 +40,5 @@ class DownloadThread(QThread):
         logging.debug("DownloadThread: 返回信号")
         self.finished.emit()
 
+    def downloadProgess(self, value):
+        self.progress.emit(value)

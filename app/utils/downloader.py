@@ -1,9 +1,8 @@
 from app.utils.single_download import SingleDownload
 from app.utils.pixiv import Pixiv
+from app.utils.random_sleep import RandomSleep
 
-import random
 import logging
-import time
 
 class Downloader:
     def __init__(self):
@@ -11,19 +10,25 @@ class Downloader:
         self.pixiv = Pixiv()
         self.single_download = SingleDownload()
         self.lastDownloadID = 0
+        self.rand_sleep = RandomSleep()
 
-    def __call__(self, userInfo):
-        return self.downloader(userInfo)
-
-    def downloader(self, userInfo) -> str:
+    def start(self, downloadProgess, userInfo) -> str:
         illusts = self.pixiv.getAllIllustFromUserID(userInfo.get("ID"))
 
         for illust in illusts:
             self.getDownloadLink(illust)
 
+        # 报告进度
+        total = len(self.downloadLink)
+        i = 1
+
         if userInfo.get("lastDownloadID"):
             logging.debug("Downloader.downloader: 数据库有记录")
             for url in self.downloadLink:
+                # 报告进度
+                downloadProgess(f"正在下载 {i}, 一共 {total}")
+                i += 1
+
                 currentDownloadID = int(url.split("/")[-1].split("_")[0])
                 if currentDownloadID <= int(userInfo.get("lastDownloadID")):
                     logging.info("这张图片已经下载过了: %s", currentDownloadID)
@@ -35,6 +40,10 @@ class Downloader:
         else:
             logging.debug("Downloader.downloader: 数据库无记录")
             for url in self.downloadLink:
+                # 报告进度
+                downloadProgess(f"正在下载 {i}, 一共 {total}")
+                i += 1
+
                 self.rand_sleep()
                 currentDownloadID = int(url.split("/")[-1].split("_")[0])
                 self.single_download(userInfo.get("name"), userInfo.get("ID"), url)
@@ -50,9 +59,3 @@ class Downloader:
             logging.debug("Downloader.getDownloadLink: 多个图片")
             for urls in illust.meta_pages:
                 self.downloadLink.append(urls.image_urls.original)
-
-    def rand_sleep(self, base: float = 0.1, rand: float = 2.5) -> None:
-        random_sleep = base + rand * random.random()
-        logging.info("Downloader.rand_sleep: 随机休眠: %s", random_sleep)
-        time.sleep(random_sleep)  # noqa: S311
-            
