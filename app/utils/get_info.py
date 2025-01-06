@@ -18,11 +18,12 @@ class GetInfo():
         logging.debug("GetInfo.get_Info: 查询数据库")
         # if userID != None:
         if userID:
-            logging.debug("GetInfo.get_Info: 有用户 ID")
+            logging.debug("GetInfo.get_Info: 有用户 ID: %s", userID)
             userInfo = self.sqlConnector.selectFromID(userID)
         elif illustID:
             logging.debug("GetInfo.get_Info: 无用户 ID")
             userID = self.pixiv.getUserIDFromillustID(illustID)
+            logging.debug("GetInfo.get_Info: 查询用户 ID: %s", userID)
             userInfo = self.sqlConnector.selectFromID(userID)
         else:
             logging.debug("GetInfo.get_Info: 用户未输入")
