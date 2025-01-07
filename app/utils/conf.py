@@ -6,7 +6,7 @@ class Conf:
     def __init__(self):
         # Example: Define application settings
         self.APP_NAME = "PixivDwonloader"
-        self.VERSION = "1.3.0"
+        self.VERSION = "1.3"
 
         # Paths
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))

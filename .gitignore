@@ -1,5 +1,4 @@
-# app/resources/images/
-resources/
+resources/images/background.png
 test/
 __pycache__
 logs/
