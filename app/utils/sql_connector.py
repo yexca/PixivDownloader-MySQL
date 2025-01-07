@@ -6,11 +6,12 @@ import os
 import logging
 from datetime import datetime
 import pymysql.cursors
+from app.utils.conf import Conf
 
 class SQLConnector():
     def __init__(self):
         print("SQLConnector: 初始化")
-        self.settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
+        # self.settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
         self.db_settings = {}
         self.__connection = None
         print("SQLConnector: 开始读取配置")
@@ -21,13 +22,8 @@ class SQLConnector():
         # print("SQLConnector: 连接数据库完成")
 
     def __load_info(self):
-        try:
-            with open(self.settings_path, "r", encoding="utf-8") as f:
-                self.db_settings = json.load(f)
-        except FileNotFoundError:
-            print(f"Settings file not found at {self.settings_path}.")
-        except json.JSONDecodeError:
-            print("Error decoding the settings file.")
+        conf = Conf()
+        self.db_settings = conf.getSettings()
 
     def __connect_sql(self):
         try:

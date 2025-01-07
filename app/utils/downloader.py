@@ -37,6 +37,7 @@ class Downloader:
                     logging.info("这张图片已经下载过了: %s", currentDownloadID)
                     continue
                 self.rand_sleep()
+                logging.info("正在下载: %s", currentDownloadID)
                 self.single_download(userInfo.get("name"), userInfo.get("ID"), url)
                 if self.lastDownloadID < currentDownloadID:
                     self.lastDownloadID = currentDownloadID
@@ -49,6 +50,7 @@ class Downloader:
 
                 self.rand_sleep()
                 currentDownloadID = int(url.split("/")[-1].split("_")[0])
+                logging.info("正在下载: %s", currentDownloadID)
                 self.single_download(userInfo.get("name"), userInfo.get("ID"), url)
                 if self.lastDownloadID < currentDownloadID:
                     self.lastDownloadID = currentDownloadID

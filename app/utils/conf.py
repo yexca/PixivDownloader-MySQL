@@ -37,6 +37,10 @@ class Conf:
     def getDownloadPath(self):
         settings = self.getSettings()
         return settings.get("download_path", "")
+    
+    def getRefreshRoken(self):
+        settings = self.getSettings()
+        return settings.get("refresh_token", "")
 
     def setSettings(self, settings):
         try:

@@ -1,7 +1,6 @@
 from pixivpy3 import *
 from app.utils.random_sleep import RandomSleep
-import json
-import os
+from app.utils.conf import Conf
 import logging
 
 class Pixiv():
@@ -13,20 +12,9 @@ class Pixiv():
         self.rand_sleep = RandomSleep()
 
     def __getToken(self):
-        settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
-
-        try:
-            with open(settings_path, "r", encoding="utf-8") as f:
-                settings = json.load(f)
-
-            # Populate fields
-            self.refreshToken = settings.get("refresh_token", "")
-
-        except FileNotFoundError:
-            print(f"Settings file not found at {settings_path}.")
-        except json.JSONDecodeError:
-            print("Error decoding the settings file.")
-        pass
+        # settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
+        conf = Conf()
+        self.refreshToken = conf.getRefreshRoken()
 
     def getUserIDFromillustID(self, illustID: str) -> str:
         json_result = self.api.illust_detail(illustID)
