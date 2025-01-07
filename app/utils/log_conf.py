@@ -1,11 +1,14 @@
 import logging
 import logging.config
 import os
+import sys
 
 class LogConf():
     def __init__(self):
+        # 如果是打包后的可执行文件，获取其目录；否则获取源代码目录
+        base_dir = os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.path.dirname(__file__)
         # 设置日志文件路径
-        LOG_DIR = os.path.join(os.getcwd(), "logs")
+        LOG_DIR = os.path.join(base_dir, "logs")
         LOG_FILE_PATH = os.path.join(LOG_DIR, "app_logs.log")
         
         # 确保日志目录存在
@@ -29,6 +32,7 @@ class LogConf():
                     "class": "logging.FileHandler",
                     "formatter": "standard",
                     "filename": LOG_FILE_PATH,
+                    "encoding": "utf-8",  # 确保文件以 UTF-8 编码写入
                 },
             },
             "root": {

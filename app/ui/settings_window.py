@@ -5,13 +5,15 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit, QFileDialog, QHBoxLayout, QMessageBox
 )
 from PyQt6.QtCore import Qt
+from app.utils.conf import Conf
 
 class SettingsWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
+        # self.settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
         self.settings = {}
         self.init_ui()
+        self.conf = Conf()
         self.load_settings()
 
     def init_ui(self):
@@ -94,25 +96,18 @@ class SettingsWindow(QWidget):
 
     def load_settings(self):
         # Load settings from the JSON file.
-        try:
-            with open(self.settings_path, "r", encoding="utf-8") as f:
-                self.settings = json.load(f)
+        self.settings = self.conf.getSettings()
 
-            # Populate fields
-            self.download_path_display.setText(self.settings.get("download_path", ""))
-            self.db_host_input.setText(self.settings.get("db_host", ""))
-            self.db_port_input.setText(self.settings.get("db_port", ""))
-            self.db_user_input.setText(self.settings.get("db_user", ""))
-            self.db_password_input.setText(self.settings.get("db_password", ""))
-            self.db_database_input.setText(self.settings.get("db_database", ""))
-
-        except FileNotFoundError:
-            print(f"Settings file not found at {self.settings_path}.")
-        except json.JSONDecodeError:
-            print("Error decoding the settings file.")
+        # Populate fields
+        self.download_path_display.setText(self.settings.get("download_path", ""))
+        self.db_host_input.setText(self.settings.get("db_host", ""))
+        self.db_port_input.setText(self.settings.get("db_port", ""))
+        self.db_user_input.setText(self.settings.get("db_user", ""))
+        self.db_password_input.setText(self.settings.get("db_password", ""))
+        self.db_database_input.setText(self.settings.get("db_database", ""))
 
     def save_settings(self):
-        """Save current settings to the JSON file."""
+        # Save current settings to the JSON file.
         self.settings["download_path"] = self.download_path_display.text()
         self.settings["db_host"] = self.db_host_input.text()
         self.settings["db_port"] = self.db_port_input.text()
@@ -120,13 +115,8 @@ class SettingsWindow(QWidget):
         self.settings["db_password"] = self.db_password_input.text()
         self.settings["db_database"] = self.db_database_input.text()
 
-        try:
-            with open(self.settings_path, "w", encoding="utf-8") as f:
-                json.dump(self.settings, f, indent=4, ensure_ascii=False)
-            print("Settings saved successfully.")
-            self.show_info()
-        except Exception as e:
-            print(f"Error saving settings: {e}")
+        self.conf.setSettings(self.settings)
+        self.show_info()
 
     def select_download_path(self):
         """Open a file dialog to select the download path."""

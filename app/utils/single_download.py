@@ -1,10 +1,13 @@
 import os
+import re
 import requests
 import json
 
+from app.utils.conf import Conf
+
 class SingleDownload:
     def __init__(self):
-        self.settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
+        # self.settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
         self.downloadPath = ""
         self.load_settings()
         os.makedirs(self.downloadPath, exist_ok=True)
@@ -13,6 +16,8 @@ class SingleDownload:
         return self.single_download(userName, userID, url)
 
     def single_download(self, userName: str , userID: str, url: str) -> bool:
+        # 清理文件夹路径
+        userName = self.clean_path(userName)
         # 判断画师文件夹是否存在
         save_dir = os.path.join(self.downloadPath, userName + " - " + userID)
         os.makedirs(save_dir, exist_ok=True)
@@ -44,12 +49,9 @@ class SingleDownload:
         pass
 
     def load_settings(self):
-        try:
-            with open(self.settings_path, "r", encoding="utf-8") as f:
-                settings = json.load(f)
-            # Populate fields
-            self.downloadPath = settings.get("download_path", "")
-        except FileNotFoundError:
-            print(f"Settings file not found at {self.settings_path}.")
-        except json.JSONDecodeError:
-            print("Error decoding the settings file.")
+        conf = Conf()
+        self.downloadPath = conf.getDownloadPath()
+
+    def clean_path(self, path: str) -> str:
+        # 移除非法字符
+        return re.sub(r'[<>:"/\\|?*]', '', path)

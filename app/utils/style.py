@@ -1,3 +1,5 @@
+MAIN_STYLE = """
+
 /* 全局背景 */
 QMainWindow {
     background-image: url();
@@ -76,3 +78,5 @@ QPushButton:hover {
 QPushButton:pressed {
     background: rgba(255, 255, 255, 0.3); /* 按钮按下效果 */
 }
+
+"""

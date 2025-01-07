@@ -3,12 +3,14 @@ import json
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit, QFileDialog, QHBoxLayout, QMessageBox
 )
-from PyQt6.QtCore import Qt
+from app.utils.conf import Conf
 
 class PixivAuthWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
+        # self.settings_path = os.path.join(os.getcwd(), "app", "resources", "conf", "settings.json")
+        self.conf = Conf()
+        self.settings = {}
         self.init_ui()
         self.load_settings()
         pass
@@ -56,29 +58,17 @@ class PixivAuthWindow(QWidget):
 
     def load_settings(self):
         # Load settings from the JSON file.
-        try:
-            with open(self.settings_path, "r", encoding="utf-8") as f:
-                self.settings = json.load(f)
+        self.settings = self.conf.getSettings()
 
-            # Populate fields
-            self.refresh_token_input.setText(self.settings.get("refresh_token", ""))
-            
-        except FileNotFoundError:
-            print(f"Settings file not found at {self.settings_path}.")
-        except json.JSONDecodeError:
-            print("Error decoding the settings file.")
+        # Populate fields
+        self.refresh_token_input.setText(self.settings.get("refresh_token", ""))
     
     def save_settings(self):
-        """Save current settings to the JSON file."""
+        # Save current settings to the JSON file.
         self.settings["refresh_token"] = self.refresh_token_input.text()
 
-        try:
-            with open(self.settings_path, "w", encoding="utf-8") as f:
-                json.dump(self.settings, f, indent=4, ensure_ascii=False)
-            print("Settings saved successfully.")
-            self.show_info()
-        except Exception as e:
-            print(f"Error saving settings: {e}")
+        self.conf.setSettings(self.settings)
+        self.show_info()
     
     def show_info(self):
         QMessageBox.information(self, "信息提示", "操作成功！", QMessageBox.StandardButton.Ok)

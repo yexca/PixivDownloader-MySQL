@@ -1,20 +1,24 @@
 from PyQt6.QtWidgets import QMainWindow, QSplitter, QListWidget, QStackedWidget, QWidget
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPainter, QPixmap
+from PyQt6.QtWidgets import QApplication
+
 from app.ui.home_window import HomeWindow
 from app.ui.settings_window import SettingsWindow
 from app.ui.about_window import AboutWindow
 from app.ui.pixiv_auth_window import PixivAuthWindow
-from PyQt6.QtWidgets import QApplication
+from app.utils.conf import Conf
+
 import os
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.conf = Conf()
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("PixivDownloader")
+        self.setWindowTitle(self.conf.APP_NAME + " v" + self.conf.VERSION)
         # self.setFixedSize(1280, 720)  # 设置窗口大小
         # self.resize(1280, 720)
         screen = QApplication.primaryScreen()
@@ -54,7 +58,8 @@ class MainWindow(QMainWindow):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        pixmap = QPixmap(os.getcwd() + "\\app\\resources\\images\\background.png")
+        # pixmap = QPixmap(os.getcwd() + "\\app\\resources\\images\\background.png")
+        pixmap = QPixmap(self.conf.BGIMG)
         painter.drawPixmap(self.rect(), pixmap)
 
     def change_page(self, index):

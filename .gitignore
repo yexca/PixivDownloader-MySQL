@@ -1,8 +1,8 @@
 # app/resources/images/
-app/resources/
+resources/
 test/
 __pycache__
 logs/
 build/
 dist/
-main.spec
+*.spec
